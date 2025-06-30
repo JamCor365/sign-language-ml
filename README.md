@@ -4,7 +4,8 @@ Este proyecto permite reconocer letras y palabras de la Lengua de Señas Mexican
 
 ## 📁 Estructura del proyecto
 
-sign_language_project/
+```text
+sign_language_ml/
 │
 ├── data/ # Datasets de letras y gestos
 ├── notebooks/ # Notebooks de análisis, entrenamiento y prueba
@@ -13,6 +14,7 @@ sign_language_project/
 ├── environment.yml # 🟢 Entorno Conda completo
 ├── requirements.txt # ⚪️ Requisitos para pip (opcional)
 └── README.md
+```
 
 ---
 
