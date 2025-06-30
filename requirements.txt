@@ -1,0 +1,13 @@
+opencv-python
+scikit-learn
+pandas
+matplotlib
+pillow
+tensorflow
+umap-learn
+seaborn
+jupyter
+notebook
+rapidfuzz
+pyprojroot
+scikit-image
