@@ -11,3 +11,6 @@ notebook
 rapidfuzz
 pyprojroot
 scikit-image
+mediapipe
+torch
+torchvision

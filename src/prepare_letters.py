@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 
 # Ruta base desde raíz del proyecto
-BASE_DIR = here() / "data" / "letters" / "statics"
+BASE_DIR = here() / "data" / "statics"
 
 # Lista para guardar registros válidos
 data = []
@@ -34,7 +34,7 @@ for letra_dir in sorted(BASE_DIR.iterdir()):
 
 # Guardar en CSV
 df = pd.DataFrame(data)
-output_csv = here() / "data" / "letters" / "letter_labels.csv"
+output_csv = here() / "data" / "letter_labels.csv"
 df.to_csv(output_csv, index=False)
 
 print(f"\n✅ CSV generado correctamente: {output_csv}")

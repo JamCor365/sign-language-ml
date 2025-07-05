@@ -1,42 +1,58 @@
-# Para los videos dinámicos: extrae frames o vectores (usando VGG16, SVD, etc.). Genera .npy o .csv por clip.
-from pyprojroot import here
+"""
+Extrae landmarks directamente de los vídeos .mp4
+y guarda un .npy por clip.
+"""
+import cv2, sys, math
 from pathlib import Path
-import cv2
+import mediapipe as mp
+import numpy as np
 from tqdm import tqdm
+from pyprojroot import here
 
-# Parámetros
-INPUT_DIR = here() / "data" / "letters" / "dynamics"
-FRAME_SKIP = 5  # Cada cuántos frames guardar
-OUT_FOLDER = "frames"  # Subcarpeta opcional si deseas cambiar la ubicación futura
+ROOT      = here()
+VIDEO_DIR = ROOT / "data" / "letters" / "dynamics"
+OUT_DIR   = ROOT / "data" / "letters" / "features" / "dynamics"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Recorremos cada letra
-for letra_dir in sorted(INPUT_DIR.iterdir()):
-    if not letra_dir.is_dir():
-        continue
-    letra = letra_dir.name
+SEQ_LEN = 30
+mp_hands = mp.solutions.hands
+hands    = mp_hands.Hands(static_image_mode=False, max_num_hands=1)
 
-    # Recorremos cada video .mp4
-    for video_path in tqdm(letra_dir.glob("*.mp4"), desc=f"Procesando {letra}"):
-        nombre_clip = video_path.stem
-        out_dir = letra_dir / nombre_clip
-        out_dir.mkdir(parents=True, exist_ok=True)
+def extract_landmarks(img_bgr):
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    res = hands.process(img_rgb)
+    if not res.multi_hand_landmarks:
+        return None
+    lm = res.multi_hand_landmarks[0]
+    xyz = np.array([[p.x, p.y, p.z] for p in lm.landmark])
+    xyz -= xyz[0]
+    scale = np.linalg.norm(xyz).mean()
+    if scale > 0: xyz /= scale
+    return xyz.flatten()
 
-        cap = cv2.VideoCapture(str(video_path))
-        frame_id = 0
-        saved_id = 0
+def process_video(path):
+    cap      = cv2.VideoCapture(str(path))
+    lms_list = []
+    while True:
+        ok, frame = cap.read()
+        if not ok: break
+        lm = extract_landmarks(frame)
+        if lm is None:
+            lm = lms_list[-1] if lms_list else np.zeros(63)
+        lms_list.append(lm)
+    cap.release()
 
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+    if len(lms_list) < SEQ_LEN:
+        lms_list.extend([lms_list[-1]] * (SEQ_LEN - len(lms_list)))
+    return np.array(lms_list[:SEQ_LEN])   # (SEQ_LEN,63)
 
-            if frame_id % FRAME_SKIP == 0:
-                out_path = out_dir / f"frame_{saved_id:03}.jpg"
-                cv2.imwrite(str(out_path), frame)
-                saved_id += 1
+for letter_dir in sorted(VIDEO_DIR.iterdir()):
+    if not letter_dir.is_dir(): continue
+    letter = letter_dir.name
+    for mp4 in tqdm(letter_dir.glob("*.mp4"), desc=f"Procesando {letter}"):
+        seq = process_video(mp4)
+        out_path = OUT_DIR / letter / f"{mp4.stem}.npy"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        np.save(out_path, seq)
 
-            frame_id += 1
-
-        cap.release()
-
-print("✅ Extracción de frames completada.")
+print("✅ Features listos en", OUT_DIR)
