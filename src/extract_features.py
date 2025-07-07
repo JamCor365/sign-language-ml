@@ -10,8 +10,8 @@ from tqdm import tqdm
 from pyprojroot import here
 
 ROOT      = here()
-VIDEO_DIR = ROOT / "data" / "letters" / "dynamics"
-OUT_DIR   = ROOT / "data" / "letters" / "features" / "dynamics"
+VIDEO_DIR = ROOT / "data" / "dynamics"
+OUT_DIR   = ROOT / "data" / "dynamics" / "features"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SEQ_LEN = 30

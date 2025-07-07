@@ -1,2 +1,9 @@
 data/
 models/
+/notebooks/demo_dynamic_sign.ipynb
+/notebooks/dynamic_sign_classifier.ipynb
+/notebooks/record_aguacate_video.ipynb
+/notebooks/split_merge_sign_detector.ipynb
+/notebooks/static_sign_classifier.ipynb
+/notebooks/static_sign_gpu_classifier.ipynb
+/src/build_datasets.py

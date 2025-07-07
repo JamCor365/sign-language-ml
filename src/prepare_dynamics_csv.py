@@ -6,8 +6,8 @@ from pathlib import Path
 from pyprojroot import here
 
 ROOT      = here()
-FEAT_DIR  = ROOT / "data" / "letters" / "features" / "dynamics"
-CSV_PATH  = ROOT / "data" / "letters" / "dynamics_sequences.csv"
+FEAT_DIR  = ROOT / "data" / "dynamics" / "features"
+CSV_PATH  = ROOT / "data" / "dynamics_sequences.csv"
 
 records = []
 for letter_dir in sorted(FEAT_DIR.iterdir()):
